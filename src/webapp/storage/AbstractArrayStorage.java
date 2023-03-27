@@ -1,5 +1,8 @@
 package webapp.storage;
 
+import webapp.exception.ExistStorageException;
+import webapp.exception.NotExistStorageException;
+import webapp.exception.StorageException;
 import webapp.model.Resume;
 
 import java.util.Arrays;
@@ -7,13 +10,30 @@ import java.util.Arrays;
 /**
  * Array based storage for Resumes
  */
-public abstract class  AbstractArrayStorage implements Storage{
+public abstract class AbstractArrayStorage implements Storage {
     protected static final int STORAGE_LIMIT = 10000;
     protected Resume[] storage = new Resume[STORAGE_LIMIT];
     protected int size = 0;
 
-    public int size() {
-        return size;
+    public void save(Resume r) {
+        int sI = searchIndex(r.getUuid());
+        if (size == storage.length) {
+            throw new StorageException("Ќедостаточно места дл€ добавлени€ Resume", r.getUuid());
+        } else if (sI >= 0) {
+            throw new ExistStorageException(r.getUuid());
+        } else {
+            insertElement(r, sI);
+            size++;
+        }
+    }
+
+    public Resume get(String uuid) {
+        int sI = searchIndex(uuid);
+        if (sI < 0) {
+            throw new NotExistStorageException(uuid);
+        } else {
+            return storage[sI];
+        }
     }
 
     public void update(Resume r) {
@@ -21,23 +41,19 @@ public abstract class  AbstractArrayStorage implements Storage{
         if (sI >= 0) {
             storage[sI] = r;
         } else {
-            System.out.println("Ќевозможно обновить, так как он отсутствует");
+            throw new NotExistStorageException(r.getUuid());
         }
 
     }
 
-    public void clear() {
-        Arrays.fill(storage, 0, size, null);
-        size = 0;
-    }
-
-    public Resume get(String uuid) {
+    public void delete(String uuid) {
         int sI = searchIndex(uuid);
-        if (sI == -1) {
-            System.out.println("Resume отсутствует");
-            return null;
+        if (sI >= 0) {
+            fillDeleteElement(sI);
+            storage[size - 1] = null;
+            size--;
         } else {
-            return storage[sI];
+            throw new NotExistStorageException(uuid);
         }
     }
 
@@ -47,6 +63,19 @@ public abstract class  AbstractArrayStorage implements Storage{
         return result;
     }
 
+    public void clear() {
+        Arrays.fill(storage, 0, size, null);
+        size = 0;
+    }
+
+    public int size() {
+        return size;
+    }
+
     protected abstract int searchIndex(String uuid);
+    protected abstract void insertElement(Resume r, int sI);
+    protected abstract void fillDeleteElement(int sI);
+
+
 
 }
