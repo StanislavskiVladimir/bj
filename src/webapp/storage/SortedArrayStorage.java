@@ -7,21 +7,21 @@ import java.util.Arrays;
 public class SortedArrayStorage extends AbstractArrayStorage {
 
     @Override
-    protected int searchIndex(String uuid) {
+    protected Integer getSearchKey(String uuid) {
         Resume searchKey = new Resume(uuid);
         return Arrays.binarySearch(storage, 0, size, searchKey);
     }
 
     @Override
-    protected void insertElement(Resume r, int sI) {
-        sI = Math.abs(sI) - 1;
-        System.arraycopy(this.storage,sI, this.storage,sI+1, size-sI);
-        storage[sI] = r;
+    protected void insertElement(Resume r, int searchKey) {
+        searchKey = Math.abs(searchKey) - 1;
+        System.arraycopy(this.storage,searchKey, this.storage,searchKey+1, size-searchKey);
+        storage[searchKey] = r;
     }
 
     @Override
-    protected void fillDeleteElement(int sI) {
-        System.arraycopy(this.storage,sI+1, this.storage,sI, size-sI-1);
+    protected void fillDeleteElement(int searchKey) {
+        System.arraycopy(this.storage,searchKey+1, this.storage,searchKey, size-searchKey-1);
     }
 
 

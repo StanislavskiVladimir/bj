@@ -1,12 +1,13 @@
 import webapp.model.Resume;
-import webapp.storage.AbstractArrayStorage;
-import webapp.storage.SortedArrayStorage;
+import webapp.storage.ListStorage;
+import webapp.storage.Storage;
 
 /**
  * Test for your webapp.storage.ArrayStorage implementation
  */
 public class MainTestArrayStorage {
-    static final AbstractArrayStorage ARRAY_STORAGE = new SortedArrayStorage();
+    //static final AbstractArrayStorage ARRAY_STORAGE = new SortedArrayStorage();
+    static final Storage ARRAY_STORAGE = new ListStorage();
 
     public static void main(String[] args) {
         Resume r1 = new Resume("uuid1");
